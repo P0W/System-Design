@@ -62,9 +62,51 @@
               "icon": "lucide-file",
               "title": "scalable_chat"
             }
+          },
+          {
+            "id": "c7f1d82ea44ef560",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "cloud_storage.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "cloud_storage"
+            }
+          },
+          {
+            "id": "32f4d66c6cb888e4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "real_time_collaborative_tool.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "real_time_collaborative_tool"
+            }
+          },
+          {
+            "id": "412ea162e172e6c6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "api_gateway.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "api_gateway"
+            }
           }
         ],
-        "currentTab": 3
+        "currentTab": 6
       }
     ],
     "direction": "vertical"
@@ -209,10 +251,13 @@
       "bases:Create new base": false
     }
   },
-  "active": "495239e8439b1ea6",
+  "active": "412ea162e172e6c6",
   "lastOpenFiles": [
-    "system-design-prompt.md",
+    "real_time_collaborative_tool.md",
+    "api_gateway.md",
+    "cloud_storage.md",
     "scalable_chat.md",
+    "system-design-prompt.md",
     "url_shortener.md",
     "message_queue.md",
     "task_management_system_design.md",
