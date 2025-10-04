@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "distributed_services/distributed_lock.md",
+                "file": "customer_facing/tagging.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "distributed_lock"
+              "title": "tagging"
             }
           }
         ]
@@ -166,18 +166,18 @@
       "bases:Create new base": false
     }
   },
-  "active": "0c291d6d70367adb",
+  "active": "4924944e54929ae0",
   "lastOpenFiles": [
-    "distributed_services/logger.md",
     "distributed_services/distributed_lock.md",
+    "distributed_services/logger.md",
     "distributed_services/hit_counter.md",
     "customer_facing/yelp_tripadvisor.md",
     "customer_facing/cricbuzz.md",
     "customer_facing/cloud_storage.md",
     "customer_facing/book_my_show.md",
-    "customer_facing/task_management_system_design.md",
+    "customer_facing/task_management.md",
     "distributed_services",
-    "customer_facing/Tagging System.md",
+    "customer_facing/tagging.md",
     "customer_facing/swiggy_zomato.md",
     "customer_facing/stock_broker.md",
     "customer_facing/scalable_chat.md",
@@ -188,7 +188,7 @@
     "customer_facing/youtube.md",
     "customer_facing/uber_lyft.md",
     "distributed_services/api_gateway.md",
-    "customer_facing/real_time_collaborative_tool.md",
+    "customer_facing/real_time_collaborative_edit.md",
     "system-design-prompt.md",
     "customer_facing/url_shortener.md",
     "distributed_services/message_queue.md",
