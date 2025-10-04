@@ -4,221 +4,20 @@
     "type": "split",
     "children": [
       {
-        "id": "af2aaf19e05ab5a7",
+        "id": "04e5231c571458a0",
         "type": "tabs",
         "children": [
           {
-            "id": "ce616c1505635187",
+            "id": "62afd71a6ecfbc15",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "system-design-prompt.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "system-design-prompt"
-            }
-          },
-          {
-            "id": "cac040ac96cf05b6",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "system-design-prompt.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "system-design-prompt"
-            }
-          },
-          {
-            "id": "e814ed53156e4d3b",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "system-design-prompt.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "system-design-prompt"
-            }
-          },
-          {
-            "id": "495239e8439b1ea6",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "scalable_chat.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "scalable_chat"
-            }
-          },
-          {
-            "id": "c7f1d82ea44ef560",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "cloud_storage.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "cloud_storage"
-            }
-          },
-          {
-            "id": "32f4d66c6cb888e4",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "real_time_collaborative_tool.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "real_time_collaborative_tool"
-            }
-          },
-          {
-            "id": "412ea162e172e6c6",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "api_gateway.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "api_gateway"
-            }
-          },
-          {
-            "id": "2837db71bfece5c0",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "swiggy_zomato.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "swiggy_zomato"
-            }
-          },
-          {
-            "id": "bb23a31e284d0dd4",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "book_my_show.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "book_my_show"
-            }
-          },
-          {
-            "id": "7f70d39a60de94b3",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "uber_lyft.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "uber_lyft"
-            }
-          },
-          {
-            "id": "96011e0bab35fe31",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "netflix.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "netflix"
-            }
-          },
-          {
-            "id": "b8ca4fd5588fed25",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "youtube.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "youtube"
-            }
-          },
-          {
-            "id": "7138737793eb6a59",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "stock_broker.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "stock_broker"
-            }
-          },
-          {
-            "id": "f5705e5e79ac7092",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "tinder.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "tinder"
-            }
-          },
-          {
-            "id": "8f45be25a822438f",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "distributed_cache.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "distributed_cache"
+              "title": "New tab"
             }
           }
-        ],
-        "currentTab": 14
+        ]
       }
     ],
     "direction": "vertical"
@@ -363,30 +162,32 @@
       "bases:Create new base": false
     }
   },
-  "active": "8f45be25a822438f",
+  "active": "4924944e54929ae0",
   "lastOpenFiles": [
-    "tinder.md",
-    "distributed_cache.md",
-    "stock_broker.md",
-    "youtube.md",
-    "netflix.md",
-    "uber_lyft.md",
-    "book_my_show.md",
-    "swiggy_zomato.md",
-    "api_gateway.md",
-    "real_time_collaborative_tool.md",
-    "cloud_storage.md",
-    "scalable_chat.md",
+    "customer_facing/task_management_system_design.md",
+    "distributed_services",
+    "customer_facing/Tagging System.md",
+    "customer_facing/swiggy_zomato.md",
+    "customer_facing/stock_broker.md",
+    "customer_facing/scalable_chat.md",
+    "customer_facing/netflix.md",
+    "customer_facing/book_my_show.md",
+    "customer_facing",
+    "distributed_services/distributed_cache.md",
+    "customer_facing/tinder.md",
+    "customer_facing/youtube.md",
+    "customer_facing/uber_lyft.md",
+    "distributed_services/api_gateway.md",
+    "customer_facing/real_time_collaborative_tool.md",
+    "customer_facing/cloud_storage.md",
     "system-design-prompt.md",
-    "url_shortener.md",
-    "message_queue.md",
-    "task_management_system_design.md",
-    "CDN.md",
+    "customer_facing/url_shortener.md",
+    "distributed_services/message_queue.md",
+    "distributed_services/CDN.md",
     "Untitled 1.canvas",
     "Untitled.canvas",
     "2025-10-05.md",
     "Untitled.base",
-    "Tagging System.md",
     "assets/task_management.png",
     "assets/cdn_system.png",
     "assets",
