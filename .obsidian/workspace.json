@@ -13,15 +13,30 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "task_management_system_design.md",
+                "file": "system-design-prompt.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "task_management_system_design"
+              "title": "system-design-prompt"
+            }
+          },
+          {
+            "id": "cac040ac96cf05b6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "system-design-prompt.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "system-design-prompt"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -166,13 +181,15 @@
       "bases:Create new base": false
     }
   },
-  "active": "ce616c1505635187",
+  "active": "cac040ac96cf05b6",
   "lastOpenFiles": [
+    "message_queue.md",
+    "system-design-prompt.md",
+    "task_management_system_design.md",
     "CDN.md",
     "Untitled 1.canvas",
     "Untitled.canvas",
     "2025-10-05.md",
-    "task_management_system_design.md",
     "Untitled.base",
     "Tagging System.md",
     "assets/task_management.png",
