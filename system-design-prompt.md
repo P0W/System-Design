@@ -88,7 +88,9 @@ Create a comprehensive yet concise system design document for [SYSTEM-DESIGN-TOP
 	- **Explain these like you're doing a deep-dive tech talk with senior peers**
 
 ### 9. Infrastructure & DevOps
-- Azure-native service recommendations (AKS, Service Bus, CosmosDB, App Insights, Azure Functions)
+- Azure-native service recommendations (AKS, Service Bus, CosmosDB, App Insights, Azure Functions). 
+- Can use AWS, if there's a better offering over Azure
+- Can use Apache or other open source framework/platform/libraries as needed.
 - CI/CD pipeline essentials
 - Infrastructure as Code approach (Terraform/Bicep)
 - Blue-green/canary deployment strategy
@@ -137,7 +139,6 @@ Create a comprehensive yet concise system design document for [SYSTEM-DESIGN-TOP
 - Code blocks with language specification for syntax highlighting
 - Callout boxes for critical insights: `> [!note], > [!warning], > [!tip], >[!important]`
 - Tables for comparison matrices and decision records
-- Collapsible sections for optional deep dives using `<details>` tags
 - **Use the tone of a seasoned architect teaching and explaining, not just documenting**
 
 ## Avoid:
@@ -158,4 +159,4 @@ Create a comprehensive yet concise system design document for [SYSTEM-DESIGN-TOP
 - Show battle scars from real distributed systems challenges
 
 ## Deliver: 
-Production-ready markdown optimized for senior/staff/principal engineer interviews with emphasis on distributed systems thinking, cloud-native Azure architecture, pragmatic trade-off analysis, and real-world engineering judgment.
+Production-ready markdown optimized for senior/staff/principal engineer interviews with emphasis on distributed systems thinking, cloud-native Azure/AWS architecture, pragmatic trade-off analysis, and real-world engineering judgment. Only a .md file is needed, internally use python to generate the .md file to avoid rendering issues.
