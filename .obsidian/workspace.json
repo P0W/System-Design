@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "04e5231c571458a0",
+        "id": "a2fee4bbf775dbbf",
         "type": "tabs",
         "children": [
           {
-            "id": "62afd71a6ecfbc15",
+            "id": "0c291d6d70367adb",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -162,8 +162,13 @@
       "bases:Create new base": false
     }
   },
-  "active": "4924944e54929ae0",
+  "active": "0c291d6d70367adb",
   "lastOpenFiles": [
+    "distributed_services/hit_counter.md",
+    "customer_facing/yelp_tripadvisor.md",
+    "customer_facing/cricbuzz.md",
+    "customer_facing/cloud_storage.md",
+    "customer_facing/book_my_show.md",
     "customer_facing/task_management_system_design.md",
     "distributed_services",
     "customer_facing/Tagging System.md",
@@ -171,7 +176,6 @@
     "customer_facing/stock_broker.md",
     "customer_facing/scalable_chat.md",
     "customer_facing/netflix.md",
-    "customer_facing/book_my_show.md",
     "customer_facing",
     "distributed_services/distributed_cache.md",
     "customer_facing/tinder.md",
@@ -179,7 +183,6 @@
     "customer_facing/uber_lyft.md",
     "distributed_services/api_gateway.md",
     "customer_facing/real_time_collaborative_tool.md",
-    "customer_facing/cloud_storage.md",
     "system-design-prompt.md",
     "customer_facing/url_shortener.md",
     "distributed_services/message_queue.md",
