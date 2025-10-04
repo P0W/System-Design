@@ -11,10 +11,14 @@
             "id": "0c291d6d70367adb",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "distributed_services/distributed_lock.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "distributed_lock"
             }
           }
         ]
@@ -164,6 +168,8 @@
   },
   "active": "0c291d6d70367adb",
   "lastOpenFiles": [
+    "distributed_services/logger.md",
+    "distributed_services/distributed_lock.md",
     "distributed_services/hit_counter.md",
     "customer_facing/yelp_tripadvisor.md",
     "customer_facing/cricbuzz.md",
