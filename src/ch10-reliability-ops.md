@@ -1,7 +1,6 @@
 # 10. Reliability, Security, Observability, and Deployment
 
-> [!warning]
-> The best architecture still fails if nobody can see it, secure it, or recover it.
+> **Warning:** The best architecture still fails if nobody can see it, secure it, or recover it.
 
 ```mermaid
 flowchart LR
@@ -80,6 +79,5 @@ flowchart LR
 - RTO and RPO targets
 - Incident runbooks
 
-> [!tip]
-> If your system cannot be observed or rolled back, it is not production-ready; it is just exposed.
+> **Tip:** If your system cannot be observed or rolled back, it is not production-ready; it is just exposed.
 

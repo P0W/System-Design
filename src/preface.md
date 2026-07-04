@@ -43,5 +43,4 @@ Memorize the reflex.
 | Conflicts | leader, quorum, CRDT, consensus |
 | "Works on my laptop" | that is not a design |
 
-> [!tip]
-> The right question is rarely "what tool should I use?" It is usually "what is the bottleneck pretending to be a tool choice?"
+> **Tip:** The right question is rarely "what tool should I use?" It is usually "what is the bottleneck pretending to be a tool choice?"

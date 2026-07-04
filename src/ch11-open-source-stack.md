@@ -1,7 +1,6 @@
 # 11. Open Source Production Stack
 
-> [!important]
-> Real production systems are usually not built from one shiny database. They are built from boring, dependable tools that fail in understandable ways.
+> **Important:** Real production systems are usually not built from one shiny database. They are built from boring, dependable tools that fail in understandable ways.
 > Prefer local/open-source primitives first; use managed cloud only when it materially reduces risk or ops burden.
 
 ```mermaid
@@ -113,5 +112,4 @@ sequenceDiagram
 | General time-series ingest | InfluxDB |
 | Analytics over large event sets | ClickHouse |
 
-> [!tip]
-> If the question is "can PostgreSQL do this?", the right answer is "yes, until the workload says no."
+> **Tip:** If the question is "can PostgreSQL do this?", the right answer is "yes, until the workload says no."

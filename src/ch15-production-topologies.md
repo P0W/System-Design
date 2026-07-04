@@ -1,7 +1,6 @@
 # 15. Production Topologies
 
-> [!note]
-> "We'll figure out production later" is a classic engineer promise that becomes a 3 AM incident.
+> **Note:** "We'll figure out production later" is a classic engineer promise that becomes a 3 AM incident.
 > These are the real cluster layouts that don't fall over when someone looks at them sideways.
 
 ```mermaid
@@ -493,6 +492,5 @@ flowchart LR
 | MongoDB RS | replica set election | ~10–30 s | none with writeConcern=majority |
 | Spanner | Paxos minority failure | transparent | none |
 
-> [!tip]
-> The best cluster topology is the one your on-call team can reason about at 3 AM without reading the docs.
+> **Tip:** The best cluster topology is the one your on-call team can reason about at 3 AM without reading the docs.
 > Boring, well-understood, and observable beats clever and opaque every time.

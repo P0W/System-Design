@@ -1,7 +1,6 @@
 # 7. Messaging and Event-Driven Systems
 
-> [!tip]
-> A broker turns direct coupling into an operational problem you can actually reason about.
+> **Tip:** A broker turns direct coupling into an operational problem you can actually reason about.
 
 ```mermaid
 flowchart LR
@@ -52,8 +51,7 @@ sequenceDiagram
 | At-least-once | may duplicate | common, practical |
 | Exactly-once | scoped transactional processing | end-to-end still needs idempotent sinks |
 
-> [!note]
-> Kafka's "exactly once" is about the stream processing pipeline with transactions and idempotent producers/consumers. End-to-end exactly-once is still a system property, not a checkbox.
+> **Note:** Kafka's "exactly once" is about the stream processing pipeline with transactions and idempotent producers/consumers. End-to-end exactly-once is still a system property, not a checkbox.
 
 ## Patterns
 

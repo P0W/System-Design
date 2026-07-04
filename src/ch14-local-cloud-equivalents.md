@@ -1,7 +1,6 @@
 # 14. Local-First and Cloud Equivalents
 
-> [!important]
-> Start local and open-source. If a managed cloud service is justified, name the equivalent across GCP, AWS, and Azure so the design stays portable.
+> **Important:** Start local and open-source. If a managed cloud service is justified, name the equivalent across GCP, AWS, and Azure so the design stays portable.
 
 ```mermaid
 flowchart LR
@@ -38,5 +37,4 @@ flowchart LR
 
 > "I would start with PostgreSQL, HAProxy, Redis, and Kafka on Kubernetes. If we need managed operations, that maps to Cloud SQL / RDS / Azure Database for PostgreSQL, Cloud Load Balancing / ALB / Application Gateway, Memorystore / ElastiCache / Azure Cache for Redis, and Pub/Sub / SQS or SNS / Service Bus."
 
-> [!tip]
-> Portability is a design choice. Vendor names are just aliases until the requirements force otherwise.
+> **Tip:** Portability is a design choice. Vendor names are just aliases until the requirements force otherwise.

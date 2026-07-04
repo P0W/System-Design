@@ -1,7 +1,6 @@
 # 9. Realtime Systems and Coordination
 
-> [!tip]
-> Realtime systems are just normal systems with a shorter patience budget.
+> **Tip:** Realtime systems are just normal systems with a shorter patience budget.
 
 ```mermaid
 stateDiagram-v2
@@ -119,5 +118,4 @@ flowchart LR
   PB --> WS2
 ```
 
-> [!note]
-> WebSocket servers are stateful enough that horizontal scale usually needs a shared backplane for fanout and presence.
+> **Note:** WebSocket servers are stateful enough that horizontal scale usually needs a shared backplane for fanout and presence.

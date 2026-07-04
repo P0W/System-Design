@@ -1,7 +1,6 @@
 # 6. Databases in Practice
 
-> [!note]
-> Real database choice is about workload shape, not brand loyalty.
+> **Note:** Real database choice is about workload shape, not brand loyalty.
 
 ```mermaid
 flowchart TD

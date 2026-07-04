@@ -1,7 +1,6 @@
 # 8. Batch, Stream, Search, and Specialized Stores
 
-> [!note]
-> Batch is for history. Stream is for immediacy. Search is for finding what humans actually meant.
+> **Note:** Batch is for history. Stream is for immediacy. Search is for finding what humans actually meant.
 
 ```mermaid
 flowchart LR

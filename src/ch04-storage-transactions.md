@@ -1,7 +1,6 @@
 # 4. Storage, Indexes, and Transactions
 
-> [!tip]
-> Storage design is mostly about matching access patterns to the right shape of data.
+> **Tip:** Storage design is mostly about matching access patterns to the right shape of data.
 
 ```mermaid
 flowchart TD
@@ -88,5 +87,4 @@ sequenceDiagram
 | Snapshot isolation | stable snapshot | write skew |
 | Serializable | behaves like one-at-a-time | lower throughput |
 
-> [!note]
-> A transaction is not correct because it "usually works." It is correct when the invariants survive the worst interleaving you can imagine.
+> **Note:** A transaction is not correct because it "usually works." It is correct when the invariants survive the worst interleaving you can imagine.

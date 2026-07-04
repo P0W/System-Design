@@ -1,7 +1,6 @@
 # 13. Distributed System Patterns
 
-> [!important]
-> These are the primitives that keep distributed systems from turning into group projects with outages.
+> **Important:** These are the primitives that keep distributed systems from turning into group projects with outages.
 
 ```mermaid
 flowchart LR
@@ -108,5 +107,4 @@ sequenceDiagram
   Note over L,F: stale leader loses token after failover
 ```
 
-> [!tip]
-> If you remember only one thing: logs make recovery possible, leases make ownership safe, and fencing makes failover sane.
+> **Tip:** If you remember only one thing: logs make recovery possible, leases make ownership safe, and fencing makes failover sane.

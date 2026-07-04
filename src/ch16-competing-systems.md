@@ -1,7 +1,6 @@
 # 16. Competing Systems — Same Problem, Different Choices
 
-> [!note]
-> Every "build X like Y" interview question is secretly asking: "do you understand why Y made the choices Y made?"
+> **Note:** Every "build X like Y" interview question is secretly asking: "do you understand why Y made the choices Y made?"
 > Two products in the same space solve the same user need with different bets on scale, consistency, and latency.
 > This chapter maps those bets.
 
@@ -395,5 +394,4 @@ flowchart TD
 | Slack vs WhatsApp | Enterprise search + threads vs E2E encrypted consumer messaging |
 | Stripe vs UPI | Card network rail vs interbank real-time rail |
 
-> [!tip]
-> The fastest way to answer a "compare X and Y" question is to first establish that both systems have an identical core (they always do), then precisely identify the one architectural decision where they diverge — and explain why that decision was forced by their business model, not just technology preference.
+> **Tip:** The fastest way to answer a "compare X and Y" question is to first establish that both systems have an identical core (they always do), then precisely identify the one architectural decision where they diverge — and explain why that decision was forced by their business model, not just technology preference.

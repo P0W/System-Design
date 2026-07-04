@@ -1,7 +1,6 @@
 # 17. The Cheat Sheet
 
-> [!note]
-> Print this. Tattoo it. Read it in the Uber to your interview.
+> **Note:** Print this. Tattoo it. Read it in the Uber to your interview.
 > This is the one chapter where brevity is the entire point.
 
 ---
@@ -394,6 +393,5 @@ flowchart TD
   C -->|write consistency| WT2[Write-through]
 ```
 
-> [!tip]
-> In an interview you won't have this cheat sheet. So read it until it's in your head,
+> **Tip:** In an interview you won't have this cheat sheet. So read it until it's in your head,
 > not on the page.

@@ -1,7 +1,6 @@
 # 12. Google Product Archetypes
 
-> [!note]
-> For Google products, the product name is just a wrapper. The real target is the concept pattern hidden inside it.
+> **Note:** For Google products, the product name is just a wrapper. The real target is the concept pattern hidden inside it.
 
 ```mermaid
 flowchart TB
@@ -182,5 +181,4 @@ flowchart LR
   Cons --> Flow[Draw request flow]
 ```
 
-> [!tip]
-> The best answer is not "I would use X." It is "for this product, the hard part is Y, so I need X to make Y safe."
+> **Tip:** The best answer is not "I would use X." It is "for this product, the hard part is Y, so I need X to make Y safe."

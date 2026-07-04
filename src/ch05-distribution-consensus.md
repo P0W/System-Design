@@ -1,7 +1,6 @@
 # 5. Replication, Partitioning, and Consensus
 
-> [!warning]
-> Once you replicate data, disagreement becomes a feature of the system.
+> **Warning:** Once you replicate data, disagreement becomes a feature of the system.
 
 ```mermaid
 flowchart LR

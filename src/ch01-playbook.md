@@ -1,7 +1,6 @@
 # 1. The System Design Playbook
 
-> [!important]
-> Do not start with technology choices. Start with the problem, the scale, and the failure modes.
+> **Important:** Do not start with technology choices. Start with the problem, the scale, and the failure modes.
 
 ```mermaid
 flowchart TD
@@ -56,5 +55,4 @@ flowchart LR
   R --> I[Iterate]
 ```
 
-> [!tip]
-> If you cannot explain the hot path in one sentence, the design is not ready yet.
+> **Tip:** If you cannot explain the hot path in one sentence, the design is not ready yet.

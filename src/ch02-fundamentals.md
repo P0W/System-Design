@@ -1,7 +1,6 @@
 # 2. Scale, Latency, Availability, and CAP
 
-> [!note]
-> Most systems fail because the team optimized the wrong dimension.
+> **Note:** Most systems fail because the team optimized the wrong dimension.
 
 ```mermaid
 flowchart LR
@@ -61,5 +60,4 @@ flowchart LR
 
 ## Practical rule
 
-> [!tip]
-> Use strong consistency only where correctness depends on it. Everything else is a tax collector in disguise.
+> **Tip:** Use strong consistency only where correctness depends on it. Everything else is a tax collector in disguise.

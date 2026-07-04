@@ -1,7 +1,6 @@
 # 3. Request Path: DNS, CDN, Load Balancing, API Gateway
 
-> [!note]
-> Most design problems begin with a client request and end with a very expensive box in the middle.
+> **Note:** Most design problems begin with a client request and end with a very expensive box in the middle.
 
 ```mermaid
 flowchart LR
