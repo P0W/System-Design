@@ -1,6 +1,6 @@
 # Preface: Why This Book Exists
 
-<img src="../assets/cover.png" class="cover-img" alt="System Design Book Cover" />
+<img src="assets/cover.png" class="cover-img" alt="System Design Book Cover" />
 
 System design is what happens when a product meets physics and discovers the budget.
 This book is the first pass: concept-first, diagram-driven, and optimized for recall.
