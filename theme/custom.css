@@ -1,0 +1,51 @@
+/* -----------------------------------------------------------------------
+ * System Design — custom mdBook stylesheet
+ * ----------------------------------------------------------------------- */
+
+/* Always wrap code — no horizontal scrollbar */
+pre code, pre.hljs {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+  font-size: 0.88em;
+  line-height: 1.45;
+}
+pre  { overflow-x: hidden; }
+code { overflow-wrap: anywhere; }
+
+/* Tables never overflow */
+table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Mermaid diagrams — center and constrain width */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 1.2em 0;
+}
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Cover image on preface page */
+.cover-img {
+  display: block;
+  margin: 0 auto 2em auto;
+  max-width: 420px;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+}
+
+/* Callout admonitions (note / tip / warning / important) */
+blockquote {
+  border-left: 4px solid #4a9eff;
+  background: rgba(74,158,255,0.07);
+  padding: 0.6em 1em;
+  border-radius: 0 6px 6px 0;
+}
