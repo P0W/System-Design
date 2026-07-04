@@ -18,7 +18,7 @@ default-theme = "navy"
 preferred-dark-theme = "navy"
 git-repository-url = "https://github.com/P0W/System-Design"
 site-url = "/System-Design/"
-no-section-label = false
+no-section-label = true
 additional-css = ["theme/custom.css"]
 
 [output.html.fold]
