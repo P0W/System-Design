@@ -49,3 +49,36 @@ blockquote {
   padding: 0.6em 1em;
   border-radius: 0 6px 6px 0;
 }
+
+/* -----------------------------------------------------------------------
+ * Theme toggle button
+ * ----------------------------------------------------------------------- */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 6px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.8;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  /* sits naturally beside other icon-buttons */
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.theme-toggle-btn:hover,
+.theme-toggle-btn:focus-visible {
+  opacity: 1;
+  background: rgba(128, 128, 128, 0.2);
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.theme-toggle-btn svg {
+  display: block;
+  pointer-events: none;
+}

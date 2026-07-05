@@ -20,6 +20,7 @@ git-repository-url = "https://github.com/P0W/System-Design"
 site-url = "/System-Design/"
 no-section-label = true
 additional-css = ["theme/custom.css"]
+additional-js  = ["theme/theme-toggle.js", "mermaid.min.js", "mermaid-init.js"]
 
 [output.html.fold]
 enable = true
