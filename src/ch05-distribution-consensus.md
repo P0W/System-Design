@@ -87,6 +87,26 @@ stateDiagram-v2
   Leader --> Follower : sees higher term
 ```
 
+### Activity diagram: Raft write commit
+
+Raft makes a write safe by forcing it through one leader and waiting for a majority before the command is applied. A follower can store an entry, but only a committed entry is allowed to affect state.
+
+```mermaid
+flowchart TD
+  Client([Client write]) --> Leader{Current leader known?}
+  Leader -->|no| Redirect[Redirect or retry after election]
+  Leader -->|yes| Term[Leader verifies current term]
+  Term --> Append[Append entry to leader log]
+  Append --> Replicate[Replicate entry to followers]
+  Replicate --> Majority{Majority appended entry?}
+  Majority -->|no| Retry[Retry followers or step down if term is stale]
+  Retry --> Replicate
+  Majority -->|yes| Commit[Mark entry committed]
+  Commit --> Apply[Apply command to state machine]
+  Apply --> Ack([Acknowledge client])
+  Redirect --> Client
+```
+
 - **Term numbers** are Raft's logical clock — every message carries a term. A node that sees a higher term immediately reverts to follower. This prevents split-brain from stale leaders.
 - **Commit = majority**: an entry is committed (safe to apply) once a majority of nodes have appended it to their log.
 - Raft trades some performance for understandability — it is the algorithm most teams can explain, debug, and operate without a PhD.

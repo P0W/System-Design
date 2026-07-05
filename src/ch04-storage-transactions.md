@@ -83,6 +83,27 @@ ACID is the promise a relational database makes about transactions. It is not fr
 
 > **Intuition:** Atomicity is about *all or nothing*. Isolation is about *pretending nobody else exists*. Durability is about *surviving a power cut*. Consistency is the database holding up its end of the invariant contract.
 
+## Activity diagram: safe transaction write
+
+A correct transaction makes the success path boring and the crash path explicit. The acknowledgement only leaves the database after the commit record is durable.
+
+```mermaid
+flowchart TD
+  Start([Client submits command]) --> Begin[Begin transaction]
+  Begin --> Read[Read current versions or acquire needed locks]
+  Read --> Check{Business invariants still hold?}
+  Check -->|no| Abort[Abort and return conflict or validation error]
+  Check -->|yes| Stage[Stage row changes in memory]
+  Stage --> WAL[Append redo and undo information to WAL]
+  WAL --> Flush{Commit record flushed to durable storage?}
+  Flush -->|no crash or error| Rollback[Rollback during recovery; client must retry]
+  Flush -->|yes| Apply[Apply changes to pages and indexes]
+  Apply --> Release[Release locks or retire old MVCC versions later]
+  Release --> Ack([Acknowledge commit])
+  Abort --> End([No durable state change])
+  Rollback --> End
+```
+
 ## Isolation levels
 
 Isolation is a spectrum. Stronger isolation costs more throughput; weaker isolation costs correctness.

@@ -44,6 +44,34 @@ flowchart LR
 - Keep it thin enough to be useful, not so thick that it becomes a second application.
 - In many stacks, the gateway also acts as an L7 router; a separate internal load balancer is only needed when the topology really requires it.
 
+## Activity diagram: request path decisions
+
+This is the full request journey as a decision flow: resolve, serve from the edge if possible, enforce the front-door rules, then touch origin state only when needed.
+
+```mermaid
+flowchart TD
+  Start([Client needs a resource]) --> Resolve[Resolve DNS to nearest healthy edge]
+  Resolve --> Edge[Reach CDN or edge location]
+  Edge --> CacheHit{Fresh edge cache entry?}
+  CacheHit -->|yes| EdgeReturn[Return cached response]
+  CacheHit -->|no| Gateway[Forward to API gateway]
+  Gateway --> FrontDoor{Auth, quota, and request shape valid?}
+  FrontDoor -->|no| Reject[Reject with precise client error]
+  FrontDoor -->|yes| Route[Route to owning service]
+  Route --> AppCache{Application cache hit?}
+  AppCache -->|yes| Compose[Compose response]
+  AppCache -->|no| Store[Read or write durable store]
+  Store --> Refresh[Refresh cache when safe]
+  Refresh --> Compose
+  Compose --> EdgePolicy{Cacheable response?}
+  EdgePolicy -->|yes| UpdateEdge[Store with TTL and validators]
+  EdgePolicy -->|no| NoStore[Do not cache private or volatile data]
+  UpdateEdge --> Return([Return response])
+  NoStore --> Return
+  EdgeReturn --> Return
+  Reject --> Return
+```
+
 ## API styles
 
 Picking the right API style matters as much as picking the right database. Wrong choice = painful migration.

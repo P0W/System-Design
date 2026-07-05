@@ -69,6 +69,30 @@ Idempotency-Key: txn-a1b2c3d4
 → if key is new: process, store result, return 200 OK
 ```
 
+### Activity diagram: robust consumer loop
+
+A reliable consumer treats duplicate, malformed, and poison messages as normal inputs. The broker is acknowledged only after the side effect is safely recorded.
+
+```mermaid
+flowchart TD
+  Poll([Consumer receives message]) --> Decode{Schema valid?}
+  Decode -->|no| Bad[Reject to DLQ with reason]
+  Decode -->|yes| Dedupe{Idempotency key already completed?}
+  Dedupe -->|yes| AckDup[Ack without repeating side effect]
+  Dedupe -->|no| Txn[Run local transaction]
+  Txn --> Success{Transaction committed?}
+  Success -->|yes| Mark[Record processed key and result]
+  Mark --> Ack([Ack broker])
+  Success -->|transient failure| Backoff[Retry with exponential backoff and jitter]
+  Backoff --> Attempts{Retry budget left?}
+  Attempts -->|yes| Txn
+  Attempts -->|no| Poison[Move to DLQ and alert]
+  Bad --> Stop([Stop processing message])
+  AckDup --> Stop
+  Ack --> Stop
+  Poison --> Stop
+```
+
 ### Retry with exponential backoff and jitter
 
 - Retry immediately on transient failure (network blip, 503).
