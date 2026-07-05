@@ -1,10 +1,10 @@
 # System Design: First Principles
 
-A concept-first system design book for product and platform architecture reviews.
+A concept-first system design book for people who like diagrams, trade-offs, and not pretending a cache is magic.
 
-The style is intentionally visual and concise: learn the mental model first, then map it to concrete technologies. The book favors activity diagrams, decision flows, and trade-off tables so each chapter is easy to scan and reuse.
+The style is intentionally visual and concise: learn the flow first, then attach technology names without turning the page into enterprise soup. Activity diagrams show what happens when the happy path trips over reality.
 
-The default stack is **local/open-source first**. When managed cloud services are useful, the book maps them across major providers so readers can swap names without changing the architecture.
+The default stack is **local/open-source first**. Managed services appear only when they clarify the design, not because a product brochure escaped containment.
 
 ## What is inside
 
@@ -30,10 +30,10 @@ The default stack is **local/open-source first**. When managed cloud services ar
 
 ## How to use the diagrams
 
-- Start with the activity diagram in each chapter to understand the lifecycle.
-- Use decision diamonds as checkpoints: each branch should map to a real operational choice.
-- Read sequence diagrams for timing, retries, acknowledgement points, and failure boundaries.
-- Revisit tables after the diagrams to compare trade-offs without losing the flow.
+- Start with the activity diagram: it is the plot, not decorative wall art.
+- Treat every decision diamond as a tiny outage prevention meeting. If a branch cannot happen in production, delete it.
+- Use sequence diagrams to find the dangerous moments: retries, acknowledgements, timeouts, and the classic "we totally persisted that" lie.
+- Read tables after the flow so trade-offs land in your head instead of evaporating like sprint optimism.
 
 ## Start here
 
@@ -44,6 +44,6 @@ The default stack is **local/open-source first**. When managed cloud services ar
 
 ## Flavor
 
-- Diagram-first explanations
+- Diagram-first explanations with just enough sarcasm to be sticky
 - Anchored in trade-offs, bottlenecks, and failure modes
 - Short enough to be read, remembered, and reused

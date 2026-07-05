@@ -46,26 +46,26 @@ flowchart LR
 
 ## Activity diagram: request path decisions
 
-This is the full request journey as a decision flow: resolve, serve from the edge if possible, enforce the front-door rules, then touch origin state only when needed.
+Think of the request path as a bouncer, a shortcut, and a librarian arguing over who has to do real work. If the edge can answer, the origin gets to keep sipping coffee; if not, every gate checks the request before the database is bothered like royalty.
 
 ```mermaid
 flowchart TD
-  Start([Client needs a resource]) --> Resolve[Resolve DNS to nearest healthy edge]
-  Resolve --> Edge[Reach CDN or edge location]
-  Edge --> CacheHit{Fresh edge cache entry?}
-  CacheHit -->|yes| EdgeReturn[Return cached response]
-  CacheHit -->|no| Gateway[Forward to API gateway]
-  Gateway --> FrontDoor{Auth, quota, and request shape valid?}
-  FrontDoor -->|no| Reject[Reject with precise client error]
-  FrontDoor -->|yes| Route[Route to owning service]
+  Start([Client wants a thing]) --> Resolve[DNS finds the nearest healthy front door]
+  Resolve --> Edge[CDN / edge asks: do I already have this?]
+  Edge --> CacheHit{Fresh cached copy?}
+  CacheHit -->|yes, origin stays blissfully ignored| EdgeReturn[Return from edge]
+  CacheHit -->|no, fine, wake the backend| Gateway[Forward to API gateway]
+  Gateway --> FrontDoor{Auth, quota, and shape valid?}
+  FrontDoor -->|no, nice try| Reject[Reject with a clear client error]
+  FrontDoor -->|yes| Route[Route to the service that owns the mess]
   Route --> AppCache{Application cache hit?}
-  AppCache -->|yes| Compose[Compose response]
+  AppCache -->|yes, database dodges cardio| Compose[Compose response]
   AppCache -->|no| Store[Read or write durable store]
-  Store --> Refresh[Refresh cache when safe]
+  Store --> Refresh[Refresh cache only when correctness allows it]
   Refresh --> Compose
   Compose --> EdgePolicy{Cacheable response?}
   EdgePolicy -->|yes| UpdateEdge[Store with TTL and validators]
-  EdgePolicy -->|no| NoStore[Do not cache private or volatile data]
+  EdgePolicy -->|no, because leaking private data is not a feature| NoStore[Do not cache private or volatile data]
   UpdateEdge --> Return([Return response])
   NoStore --> Return
   EdgeReturn --> Return

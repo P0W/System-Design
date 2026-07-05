@@ -85,21 +85,21 @@ ACID is the promise a relational database makes about transactions. It is not fr
 
 ## Activity diagram: safe transaction write
 
-A correct transaction makes the success path boring and the crash path explicit. The acknowledgement only leaves the database after the commit record is durable.
+A transaction is a tiny courtroom drama: inspect the facts, check the rules, write the receipt, and only then tell the client, "yes, this happened." If the power dies before the receipt is durable, the database pretends the whole performance never happened.
 
 ```mermaid
 flowchart TD
-  Start([Client submits command]) --> Begin[Begin transaction]
-  Begin --> Read[Read current versions or acquire needed locks]
-  Read --> Check{Business invariants still hold?}
-  Check -->|no| Abort[Abort and return conflict or validation error]
-  Check -->|yes| Stage[Stage row changes in memory]
-  Stage --> WAL[Append redo and undo information to WAL]
-  WAL --> Flush{Commit record flushed to durable storage?}
-  Flush -->|no crash or error| Rollback[Rollback during recovery; client must retry]
+  Start([Client asks to change state]) --> Begin[Begin transaction]
+  Begin --> Read[Read current versions or take needed locks]
+  Read --> Check{Rules still hold, or did reality move?}
+  Check -->|no, physics says no| Abort[Abort with conflict or validation error]
+  Check -->|yes| Stage[Stage row changes]
+  Stage --> WAL[Write the crash-recovery receipt to WAL]
+  WAL --> Flush{Commit receipt safely on disk?}
+  Flush -->|no, the lights went out| Rollback[Recovery rolls it back; client retries]
   Flush -->|yes| Apply[Apply changes to pages and indexes]
-  Apply --> Release[Release locks or retire old MVCC versions later]
-  Release --> Ack([Acknowledge commit])
+  Apply --> Release[Release locks or retire old versions later]
+  Release --> Ack([Tell client: committed, not just vibes])
   Abort --> End([No durable state change])
   Rollback --> End
 ```

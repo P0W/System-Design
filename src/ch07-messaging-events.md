@@ -71,22 +71,22 @@ Idempotency-Key: txn-a1b2c3d4
 
 ### Activity diagram: robust consumer loop
 
-A reliable consumer treats duplicate, malformed, and poison messages as normal inputs. The broker is acknowledged only after the side effect is safely recorded.
+A consumer should behave like a paranoid accountant: check the form, check if it already paid the invoice, do the work once, and only then stamp the broker's receipt. Duplicates are not surprises; they are Tuesday.
 
 ```mermaid
 flowchart TD
-  Poll([Consumer receives message]) --> Decode{Schema valid?}
-  Decode -->|no| Bad[Reject to DLQ with reason]
-  Decode -->|yes| Dedupe{Idempotency key already completed?}
-  Dedupe -->|yes| AckDup[Ack without repeating side effect]
+  Poll([Consumer receives message]) --> Decode{Does the message shape make sense?}
+  Decode -->|no, cursed envelope| Bad[Reject to DLQ with reason]
+  Decode -->|yes| Dedupe{Have we processed this key already?}
+  Dedupe -->|yes, déjà vu with paperwork| AckDup[Ack without repeating side effect]
   Dedupe -->|no| Txn[Run local transaction]
   Txn --> Success{Transaction committed?}
   Success -->|yes| Mark[Record processed key and result]
-  Mark --> Ack([Ack broker])
-  Success -->|transient failure| Backoff[Retry with exponential backoff and jitter]
+  Mark --> Ack([Ack broker after the side effect is safe])
+  Success -->|temporary nonsense| Backoff[Retry with backoff and jitter]
   Backoff --> Attempts{Retry budget left?}
   Attempts -->|yes| Txn
-  Attempts -->|no| Poison[Move to DLQ and alert]
+  Attempts -->|no, this message chose violence| Poison[Move to DLQ and alert]
   Bad --> Stop([Stop processing message])
   AckDup --> Stop
   Ack --> Stop

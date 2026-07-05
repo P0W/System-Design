@@ -89,21 +89,21 @@ stateDiagram-v2
 
 ### Activity diagram: Raft write commit
 
-Raft makes a write safe by forcing it through one leader and waiting for a majority before the command is applied. A follower can store an entry, but only a committed entry is allowed to affect state.
+Raft is group chat with rules: one leader talks, a majority must say "seen," and only then does the cluster act. Anything less is just distributed gossip wearing a fake moustache.
 
 ```mermaid
 flowchart TD
-  Client([Client write]) --> Leader{Current leader known?}
-  Leader -->|no| Redirect[Redirect or retry after election]
-  Leader -->|yes| Term[Leader verifies current term]
+  Client([Client wants a write]) --> Leader{Do we know the current leader?}
+  Leader -->|no, democracy is buffering| Redirect[Redirect or retry after election]
+  Leader -->|yes| Term[Leader checks its term is not ancient history]
   Term --> Append[Append entry to leader log]
-  Append --> Replicate[Replicate entry to followers]
-  Replicate --> Majority{Majority appended entry?}
-  Majority -->|no| Retry[Retry followers or step down if term is stale]
+  Append --> Replicate[Ask followers to append the same entry]
+  Replicate --> Majority{Majority wrote it down?}
+  Majority -->|no, not enough witnesses| Retry[Retry or step down if stale]
   Retry --> Replicate
   Majority -->|yes| Commit[Mark entry committed]
   Commit --> Apply[Apply command to state machine]
-  Apply --> Ack([Acknowledge client])
+  Apply --> Ack([Tell client after the quorum, not before])
   Redirect --> Client
 ```
 
@@ -117,6 +117,6 @@ flowchart TD
 
 - **etcd**: Raft-based key-value store; used for distributed config, leader election, and service discovery. The coordination layer behind Kubernetes and Patroni.
 - **ZooKeeper**: ZAB-protocol (Paxos-like) coordination service; used for Kafka leader election (pre-KRaft), HBase, and custom distributed locking.
-- **Chubby**: Google's internal coarse-grained locking service — the inspiration for ZooKeeper.
+- **Chubby**: an internal coarse-grained locking service that inspired ZooKeeper.
 
 These services exist because distributed systems need a **reliable referee** — a place to atomically record "node A is leader" without race conditions. The key insight: you cannot use the database you are trying to coordinate as the coordinator.
