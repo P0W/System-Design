@@ -15,16 +15,16 @@ The default stack is **local/open-source first**. Managed services appear only w
 | 3 | DNS, CDN, load balancers, API gateways, rate limiting, request activity flow |
 | 4 | Indexes, storage engines, transactions, ACID, isolation, safe write activity flow |
 | 5 | Replication, partitioning, quorums, consensus, coordination, Raft commit flow |
-| 6 | Bloom filters, WAL, leases, heartbeats, gossip, split brain, fencing, vector clocks, repair |
-| 7 | PostgreSQL, MySQL, Spanner, DynamoDB, Cassandra, Redis |
-| 8 | Message brokers, queues, pub/sub, Kafka, event-driven design, robust consumer flow |
-| 9 | Batch, stream processing, search, analytics, specialized stores |
-| 10 | Realtime systems, collaboration, notifications, distributed locks |
-| 11 | Reliability, security, observability, deployment, incident response flow |
-| 12 | etcd, HAProxy, PostgreSQL, PgBouncer, and production open-source stacks |
-| 13 | Production topologies for resilient services and data layers |
+| 6 | PostgreSQL, MySQL, Spanner, DynamoDB, Cassandra, Redis |
+| 7 | Message brokers, queues, pub/sub, Kafka, event-driven design, robust consumer flow |
+| 8 | Batch, stream processing, search, analytics, specialized stores |
+| 9 | Realtime systems, collaboration, notifications, distributed locks |
+| 10 | Reliability, security, observability, deployment, incident response flow |
+| 11 | etcd, HAProxy, PostgreSQL, PgBouncer, and production open-source stacks |
+| 12 | Product archetypes for mail, video, calendar, payments, news, documents, storage, and maps |
+| 13 | Bloom filters, WAL, leases, heartbeats, gossip, split brain, fencing, vector clocks, repair |
 | 14 | Local-first tools and cloud equivalents across major providers |
-| 15 | Product archetypes for mail, video, calendar, payments, news, documents, storage, and maps |
+| 15 | Production topologies for resilient services and data layers |
 | 16 | Competing systems and why different products choose different trade-offs |
 | 17 | A compact cheat sheet for quick review |
 

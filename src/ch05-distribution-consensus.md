@@ -99,16 +99,18 @@ flowchart TD
   Term --> Append[Append entry to leader log]
   Append --> Replicate[Ask followers to append the same entry]
   Replicate --> Majority{Majority wrote it down?}
-  Majority -->|no, not enough witnesses| Retry[Retry or step down if stale]
-  Retry --> Replicate
-  Majority -->|yes| Commit[Mark entry committed]
+  Majority -->|no, not enough witnesses| Stale{Higher term seen or election timeout?}
+  Stale -->|no| Replicate
+  Stale -->|yes| StepDown[Step down; let election pick a leader]
+  Majority -->|yes, current-term entry| Commit[Mark entry committed]
   Commit --> Apply[Apply command to state machine]
   Apply --> Ack([Tell client after the quorum, not before])
   Redirect --> Client
+  StepDown --> Client
 ```
 
 - **Term numbers** are Raft's logical clock — every message carries a term. A node that sees a higher term immediately reverts to follower. This prevents split-brain from stale leaders.
-- **Commit = majority**: an entry is committed (safe to apply) once a majority of nodes have appended it to their log.
+- **Commit = majority for the leader's current term**: once a current-term entry is replicated to a majority, it is safe to apply; older entries become committed through that current-term commit.
 - Raft trades some performance for understandability — it is the algorithm most teams can explain, debug, and operate without a PhD.
 
 > **Tip:** Paxos exists and predates Raft. Raft was designed to be equivalent but more understandable. In practice, use etcd or ZooKeeper (which implement Raft and ZAB respectively) rather than rolling your own.

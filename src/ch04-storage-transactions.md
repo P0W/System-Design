@@ -93,15 +93,16 @@ flowchart TD
   Begin --> Read[Read current versions or take needed locks]
   Read --> Check{Rules still hold, or did reality move?}
   Check -->|no, physics says no| Abort[Abort with conflict or validation error]
-  Check -->|yes| Stage[Stage row changes]
+  Check -->|yes| Stage[Apply row and index changes in memory]
   Stage --> WAL[Write the crash-recovery receipt to WAL]
   WAL --> Flush{Commit receipt safely on disk?}
   Flush -->|no, the lights went out| Rollback[Recovery rolls it back; client retries]
-  Flush -->|yes| Apply[Apply changes to pages and indexes]
-  Apply --> Release[Release locks or retire old versions later]
+  Flush -->|yes| Release[Release locks or retire old versions later]
   Release --> Ack([Tell client: committed, not just vibes])
-  Abort --> End([No durable state change])
+  Ack --> Later[Flush dirty pages later during checkpoint]
+  Abort --> End([No durable commit])
   Rollback --> End
+  Later --> End
 ```
 
 ## Isolation levels

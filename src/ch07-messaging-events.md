@@ -79,10 +79,9 @@ flowchart TD
   Decode -->|no, cursed envelope| Bad[Reject to DLQ with reason]
   Decode -->|yes| Dedupe{Have we processed this key already?}
   Dedupe -->|yes, déjà vu with paperwork| AckDup[Ack without repeating side effect]
-  Dedupe -->|no| Txn[Run local transaction]
-  Txn --> Success{Transaction committed?}
-  Success -->|yes| Mark[Record processed key and result]
-  Mark --> Ack([Ack broker after the side effect is safe])
+  Dedupe -->|no| Txn[Run one transaction: side effect plus processed-key record]
+  Txn --> Success{Atomic transaction committed?}
+  Success -->|yes| Ack([Ack broker after the side effect is safe])
   Success -->|temporary nonsense| Backoff[Retry with backoff and jitter]
   Backoff --> Attempts{Retry budget left?}
   Attempts -->|yes| Txn
