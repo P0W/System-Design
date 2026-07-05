@@ -34,13 +34,18 @@ Read the chapters in order once.
 Do not memorize the words.
 Memorize the reflex.
 
+When you walk into a design discussion, the answer rarely starts with a tool name.
+It starts with a question. Then another. Then a diagram. Then a trade-off.
+This book trains the reflex for those first few questions.
+
 | If you see... | Think... |
 |---|---|
 | Hot read path | cache, index, CDN |
 | Huge write load | log, queue, LSM, batch |
 | Many readers, few writers | replica, column store |
 | Ranges and ordering | B-tree, partition key, time series |
-| Conflicts | leader, quorum, CRDT, consensus |
+| Conflicts across nodes | leader, quorum, CRDT, consensus |
 | "Works on my laptop" | that is not a design |
+| "It'll scale" | prove it with numbers |
 
 > **Tip:** The right question is rarely "what tool should I use?" It is usually "what is the bottleneck pretending to be a tool choice?"

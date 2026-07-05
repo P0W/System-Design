@@ -74,17 +74,32 @@ sequenceDiagram
 
 ## ACID
 
-- **Atomicity**: all or nothing.
-- **Consistency**: invariants still hold.
-- **Isolation**: concurrent transactions do not step on each other.
-- **Durability**: committed data survives failure.
+ACID is the promise a relational database makes about transactions. It is not free — each property has a cost.
+
+- **Atomicity**: all operations in a transaction commit or none do. If a crash occurs mid-transaction, the database rolls back to the pre-transaction state using the write-ahead log.
+- **Consistency**: the database moves from one valid state to another. Invariants (foreign keys, check constraints, application-level rules) must hold before and after every transaction.
+- **Isolation**: concurrent transactions behave as if they ran one at a time. Without isolation, one transaction can see another's in-flight dirty data, leading to corrupted state.
+- **Durability**: once a transaction commits, the data survives crashes. Ensured by flushing the write-ahead log to durable storage before acknowledging the commit.
+
+> **Intuition:** Atomicity is about *all or nothing*. Isolation is about *pretending nobody else exists*. Durability is about *surviving a power cut*. Consistency is the database holding up its end of the invariant contract.
 
 ## Isolation levels
 
-| Level | Main property | Main risk |
-|---|---|---|
-| Read committed | no dirty reads | non-repeatable reads |
-| Snapshot isolation | stable snapshot | write skew |
-| Serializable | behaves like one-at-a-time | lower throughput |
+Isolation is a spectrum. Stronger isolation costs more throughput; weaker isolation costs correctness.
 
-> **Note:** A transaction is not correct because it "usually works." It is correct when the invariants survive the worst interleaving you can imagine.
+| Level | Dirty read | Non-repeatable read | Phantom read | Write skew | Notes |
+|---|---|---|---|---|---|
+| Read uncommitted | ✓ possible | ✓ possible | ✓ possible | ✓ possible | Almost never use; shows in-flight data |
+| Read committed | ✗ prevented | ✓ possible | ✓ possible | ✓ possible | Default in PostgreSQL and Oracle |
+| Repeatable read | ✗ prevented | ✗ prevented | ✓ possible | ✓ possible | Default in MySQL InnoDB |
+| Snapshot isolation | ✗ prevented | ✗ prevented | ✗ prevented | ✓ possible | MVCC-based; used by PostgreSQL SI |
+| Serializable | ✗ prevented | ✗ prevented | ✗ prevented | ✗ prevented | Safest; highest cost |
+
+**What these anomalies mean in plain English:**
+
+- **Dirty read**: you read a value written by a transaction that has not committed yet — and then it rolls back. You saw data that never existed.
+- **Non-repeatable read**: you read a row, another transaction updates it and commits, you read it again in the same transaction and get a different value.
+- **Phantom read**: you query for rows matching a condition, another transaction inserts a row that matches, and your re-query returns extra rows.
+- **Write skew**: two transactions each read a shared value, decide it is safe to proceed, and both write — but their combined writes violate an invariant neither could detect alone. Classic example: two doctors both see "there is 1 doctor on call" and both take themselves off call simultaneously.
+
+> **Note:** A transaction is not correct because it "usually works." It is correct when the invariants survive the worst concurrent interleaving you can construct. Test with concurrent workloads, not just sequential ones.

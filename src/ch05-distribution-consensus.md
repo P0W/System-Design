@@ -47,33 +47,56 @@ These three terms are frequently confused. They mean different things:
 
 ## Quorums
 
-- `R + W > N` is the basic overlap rule for leaderless quorum systems.
-- It helps ensure reads and writes intersect on at least one replica.
-- It does **not** by itself guarantee freshness or total order.
-- That's why quorum replication and consensus are related but not the same thing.
+In a leaderless system (Cassandra, DynamoDB), reads and writes go to multiple replicas simultaneously. Quorum rules ensure that at least one replica that participated in a write also participates in the subsequent read.
+
+- **W + R > N** — the basic overlap rule: if you write to W replicas and read from R replicas in a cluster of N, the sets must overlap.
+- Example: N=3, W=2, R=2 → overlap guaranteed on at least 1 replica.
+- This gives **R + W > N** consistency: reads can see the latest write.
+- It does **not** by itself guarantee total order or freshness — concurrent writes can still conflict. Cassandra uses last-write-wins (LWW) with timestamps to resolve conflicts, which is lossy.
+- Quorum replication is not the same as consensus — Raft/Paxos provides stronger guarantees because they serialize all writes through a single leader.
+
+**Common quorum configurations:**
+
+| N | W | R | Property |
+|---|---|---|---|
+| 3 | 2 | 2 | strong quorum — standard default |
+| 3 | 1 | 3 | fast writes, slow reads |
+| 3 | 3 | 1 | slow writes, fast reads — fragile |
+| 3 | 1 | 1 | fastest — eventual consistency only |
 
 ## Consensus
 
-- Used when the cluster needs one agreed order of events.
-- Raft is the practical default mental model: elect a leader, replicate a log, commit entries.
-- Paxos exists; Raft is the version most people can explain without a whiteboard meltdown.
+Consensus answers the question: **how do a group of nodes agree on a single value when any of them might fail?**
+
+This is the fundamental problem behind leader election, distributed locks, and replicated state machines.
+
+### Raft — the practical mental model
+
+Raft decomposes consensus into three subproblems: leader election, log replication, and safety.
+
+1. **Leader election**: nodes start as followers. If a follower hears no heartbeat within a timeout, it becomes a candidate and requests votes. A candidate that gets a majority becomes leader.
+2. **Log replication**: the leader receives all writes, appends them to its log, replicates to followers, and commits once a majority acknowledges.
+3. **Safety**: a node can only win an election if its log is at least as up-to-date as the majority — preventing stale nodes from becoming leader.
 
 ```mermaid
-sequenceDiagram
-  participant C as Client
-  participant L as Leader
-  participant F1 as Follower 1
-  participant F2 as Follower 2
-  C->>L: write
-  L->>F1: replicate
-  L->>F2: replicate
-  F1-->>L: ack
-  F2-->>L: ack
-  L-->>C: commit
+stateDiagram-v2
+  [*] --> Follower
+  Follower --> Candidate : election timeout fires
+  Candidate --> Leader : receives majority vote
+  Candidate --> Follower : another leader wins
+  Leader --> Follower : sees higher term
 ```
+
+- **Term numbers** are Raft's logical clock — every message carries a term. A node that sees a higher term immediately reverts to follower. This prevents split-brain from stale leaders.
+- **Commit = majority**: an entry is committed (safe to apply) once a majority of nodes have appended it to their log.
+- Raft trades some performance for understandability — it is the algorithm most teams can explain, debug, and operate without a PhD.
+
+> **Tip:** Paxos exists and predates Raft. Raft was designed to be equivalent but more understandable. In practice, use etcd or ZooKeeper (which implement Raft and ZAB respectively) rather than rolling your own.
 
 ## Coordination
 
-- ZooKeeper-style services manage leader election, locks, and configuration.
-- They exist because distributed systems need a referee.
-- The lower-level repair and membership primitives live in the distributed patterns chapter.
+- **etcd**: Raft-based key-value store; used for distributed config, leader election, and service discovery. The coordination layer behind Kubernetes and Patroni.
+- **ZooKeeper**: ZAB-protocol (Paxos-like) coordination service; used for Kafka leader election (pre-KRaft), HBase, and custom distributed locking.
+- **Chubby**: Google's internal coarse-grained locking service — the inspiration for ZooKeeper.
+
+These services exist because distributed systems need a **reliable referee** — a place to atomically record "node A is leader" without race conditions. The key insight: you cannot use the database you are trying to coordinate as the coordinator.
