@@ -87,8 +87,30 @@ stateDiagram-v2
   Leader --> Follower : sees higher term
 ```
 
+### Activity diagram: Raft write commit
+
+Raft is group chat with rules: one leader talks, a majority must say "seen," and only then does the cluster act. Anything less is just distributed gossip wearing a fake moustache.
+
+```mermaid
+flowchart TD
+  Client([Client wants a write]) --> Leader{Do we know the current leader?}
+  Leader -->|no, democracy is buffering| Redirect[Redirect or retry after election]
+  Leader -->|yes| Term[Leader checks its term is not ancient history]
+  Term --> Append[Append entry to leader log]
+  Append --> Replicate[Ask followers to append the same entry]
+  Replicate --> Majority{Majority wrote it down?}
+  Majority -->|no, not enough witnesses| Stale{Higher term seen or election timeout?}
+  Stale -->|no| Replicate
+  Stale -->|yes| StepDown[Step down; let election pick a leader]
+  Majority -->|yes, current-term entry| Commit[Mark entry committed]
+  Commit --> Apply[Apply command to state machine]
+  Apply --> Ack([Tell client after the quorum, not before])
+  Redirect --> Client
+  StepDown --> Client
+```
+
 - **Term numbers** are Raft's logical clock — every message carries a term. A node that sees a higher term immediately reverts to follower. This prevents split-brain from stale leaders.
-- **Commit = majority**: an entry is committed (safe to apply) once a majority of nodes have appended it to their log.
+- **Commit = majority for the leader's current term**: once a current-term entry is replicated to a majority, it is safe to apply; older entries become committed through that current-term commit.
 - Raft trades some performance for understandability — it is the algorithm most teams can explain, debug, and operate without a PhD.
 
 > **Tip:** Paxos exists and predates Raft. Raft was designed to be equivalent but more understandable. In practice, use etcd or ZooKeeper (which implement Raft and ZAB respectively) rather than rolling your own.
@@ -97,6 +119,6 @@ stateDiagram-v2
 
 - **etcd**: Raft-based key-value store; used for distributed config, leader election, and service discovery. The coordination layer behind Kubernetes and Patroni.
 - **ZooKeeper**: ZAB-protocol (Paxos-like) coordination service; used for Kafka leader election (pre-KRaft), HBase, and custom distributed locking.
-- **Chubby**: Google's internal coarse-grained locking service — the inspiration for ZooKeeper.
+- **Chubby**: an internal coarse-grained locking service that inspired ZooKeeper.
 
 These services exist because distributed systems need a **reliable referee** — a place to atomically record "node A is leader" without race conditions. The key insight: you cannot use the database you are trying to coordinate as the coordinator.

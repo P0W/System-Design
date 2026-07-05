@@ -69,6 +69,29 @@ Idempotency-Key: txn-a1b2c3d4
 → if key is new: process, store result, return 200 OK
 ```
 
+### Activity diagram: robust consumer loop
+
+A consumer should behave like a paranoid accountant: check the form, check if it already paid the invoice, do the work once, and only then stamp the broker's receipt. Duplicates are not surprises; they are Tuesday.
+
+```mermaid
+flowchart TD
+  Poll([Consumer receives message]) --> Decode{Does the message shape make sense?}
+  Decode -->|no, cursed envelope| Bad[Reject to DLQ with reason]
+  Decode -->|yes| Dedupe{Have we processed this key already?}
+  Dedupe -->|yes, déjà vu with paperwork| AckDup[Ack without repeating side effect]
+  Dedupe -->|no| Txn[Run one transaction: side effect plus processed-key record]
+  Txn --> Success{Atomic transaction committed?}
+  Success -->|yes| Ack([Ack broker after the side effect is safe])
+  Success -->|temporary nonsense| Backoff[Retry with backoff and jitter]
+  Backoff --> Attempts{Retry budget left?}
+  Attempts -->|yes| Txn
+  Attempts -->|no, this message chose violence| Poison[Move to DLQ and alert]
+  Bad --> Stop([Stop processing message])
+  AckDup --> Stop
+  Ack --> Stop
+  Poison --> Stop
+```
+
 ### Retry with exponential backoff and jitter
 
 - Retry immediately on transient failure (network blip, 503).

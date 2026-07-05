@@ -100,6 +100,27 @@ Design systems to deliver reduced functionality rather than a complete outage.
 - High-cardinality labels controlled (avoid per-user labels in Prometheus)
 - On-call rotation with clear paging policy and runbooks
 
+## Activity diagram: incident response loop
+
+An incident is production's way of grading your homework in public. The loop is simple: notice fast, stop the bleeding, clean the mess, then make sure the same rake is not waiting for your face tomorrow.
+
+```mermaid
+flowchart TD
+  Signal([Alert, trace, log, or user report]) --> Triage[Confirm impact and the path on fire]
+  Triage --> Severe{Hurting users or risking data?}
+  Severe -->|yes, congratulations| Declare[Declare incident and assign roles]
+  Severe -->|no| Track[Track as normal operational work]
+  Declare --> Contain[Contain blast radius: rollback, flag, rate limit, or failover]
+  Contain --> Stable{Stable, or still doing interpretive dance?}
+  Stable -->|no| Mitigate[Try the next safe mitigation]
+  Mitigate --> Contain
+  Stable -->|yes| Recover[Repair backlog, queues, and data consistency]
+  Recover --> Verify[Verify metrics and customer-visible behavior]
+  Verify --> Learn[Add tests, alerts, runbook fixes, and guardrails]
+  Learn --> Done([Close only after actions have owners])
+  Track --> Done
+```
+
 ## Security
 
 Security is not a feature you add at the end — it is a property you design for from the beginning.
