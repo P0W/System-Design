@@ -28,21 +28,30 @@ Use these as your default toolkit:
 - **Timestamps:** `TIMESTAMPTZ` (always store UTC).
 - **Currency/Decimals:** `NUMERIC(precision, scale)`. Never use floats for financial data.
 
-#### Creating Tables and Enums
-Enums enforce data integrity at the database layer, preventing invalid states.
+#### Creating Tables and Relationships (Primary & Foreign Keys)
+Relational databases shine at enforcing integrity. Use Enums for strict state machines, and Foreign Keys to prevent orphan records.
 
 ```sql
 CREATE TYPE order_status AS ENUM ('pending', 'paid', 'shipped', 'delivered', 'cancelled');
 
+-- The parent table
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- The child table with a foreign key
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL, -- Assume references users(id)
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
     status order_status NOT NULL DEFAULT 'pending',
     total_amount NUMERIC(10, 2) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 ```
+*Note: `ON DELETE RESTRICT` prevents deleting a user if they have orders. Alternatively, `ON DELETE CASCADE` would automatically delete all their orders.*
 
 #### JSONB for Semi-Structured Data
 When schemas are highly variable (e.g., product attributes, user preferences, dynamic telemetry), use `JSONB`. It stores JSON efficiently in a binary format and supports robust indexing. Use `JSONB` when the shape is genuinely variable and the value is flexibility, not relational structure. If you need joins, constraints, or predictable analytics, keep the data relational and denormalize only when you have a clear reason.
