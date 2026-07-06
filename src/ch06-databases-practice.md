@@ -142,10 +142,43 @@ flowchart LR
 
 With durable WAL retention, a healthy connector, and a durable broker, this gives downstream systems an eventually consistent path from committed database changes without requiring the application to dual-write.
 
-## Spanner
+## Spanner and CockroachDB
 
-- Globally distributed relational database with strong consistency.
+- Globally distributed relational databases with strong consistency (NewSQL).
 - Useful when a single global truth matters more than convenience.
+- Both decouple computation from storage and use consensus (Paxos for Spanner, Raft for CockroachDB) to maintain synchronous replicas across regions.
+
+### CockroachDB Schema Design Refresher
+
+CockroachDB speaks the PostgreSQL wire protocol but operates in a fundamentally different way under the hood. Data is stored in a distributed key-value store (Pebble) where rows are lexicographically sorted by their primary keys.
+
+#### Anti-Pattern: Sequential Primary Keys
+In PostgreSQL, `SERIAL` or `BIGINT GENERATED ALWAYS AS IDENTITY` is standard. In CockroachDB, this is a fatal anti-pattern. Because rows are sorted by key, sequential inserts route to the exact same physical range (node), creating massive write hotspots.
+
+```sql
+-- BAD: Creates a write hotspot
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email TEXT
+);
+
+-- GOOD: Randomly distributes writes across all nodes
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT
+);
+```
+
+#### Multi-Region Topologies
+By default, CockroachDB optimizes for global survivability. You can optimize for local latency by explicitly telling the database where data lives using `LOCALITY`.
+
+```sql
+-- Pin table data to a specific region for low-latency local reads/writes
+ALTER TABLE users SET LOCALITY REGIONAL BY TABLE IN PRIMARY REGION "eu-west-1";
+
+-- For data like lookup tables (e.g., country codes) that are read everywhere but rarely written
+ALTER TABLE country_codes SET LOCALITY GLOBAL;
+```
 
 ## DynamoDB
 
@@ -166,7 +199,7 @@ The primary key in Cassandra has one required part and one optional part:
 1. **Partition Key:** Hashes the row to a token range and determines the replica set that stores the partition.
 2. **Clustering Key:** Optional columns that determine how rows are sorted within that partition.
 
-```cql
+```sql
 -- Model for: "Get all sensor readings for a specific device, ordered by time"
 CREATE TABLE sensor_data (
     device_id UUID,
@@ -182,14 +215,14 @@ CREATE TABLE sensor_data (
 #### Essential CQL Queries
 
 **Insert data:**
-```cql
+```sql
 INSERT INTO sensor_data (device_id, recorded_at, temperature, humidity) 
 VALUES (123e4567-e89b-12d3-a456-426614174000, toTimestamp(now()), 22.5, 45.0)
 USING TTL 86400; -- Data automatically expires after 1 day
 ```
 
 **Query data (anchor reads on the partition key):**
-```cql
+```sql
 -- Fast path: the partition key routes the request to the replicas for one partition,
 -- and LIMIT 10 returns the newest rows because recorded_at is clustered DESC.
 SELECT temperature FROM sensor_data 
@@ -197,7 +230,7 @@ WHERE device_id = 123e4567-e89b-12d3-a456-426614174000
 LIMIT 10;
 ```
 
-```cql
+```sql
 -- Bad data model for Cassandra: without an index this is rejected,
 -- and forcing it with ALLOW FILTERING would require scanning too much data.
 SELECT * FROM sensor_data WHERE temperature > 25.0; 
@@ -205,7 +238,7 @@ SELECT * FROM sensor_data WHERE temperature > 25.0;
 
 **Time-Series Pattern (Bucketing):**
 If a single device produces millions of readings, the partition will grow too large (a "wide row"). Solve this by bucketing the partition key by time.
-```cql
+```sql
 CREATE TABLE sensor_data_bucketed (
     device_id UUID,
     month TEXT, -- e.g., '2026-07'
@@ -231,6 +264,74 @@ flowchart LR
   MR --> SH1[(Shard 1 replica set)]
   MR --> SH2[(Shard 2 replica set)]
   MR --> SH3[(Shard 3 replica set)]
+```
+
+### MongoDB Schema Design Refresher
+
+The fundamental question in MongoDB schema design is **Embedding vs. Referencing**. Because joins (`$lookup`) in MongoDB are expensive, you want data that is queried together to live together.
+
+#### Embedding (The Default Choice)
+If data has a 1-to-few relationship and the child data is never queried independently of the parent, embed it. This provides atomic updates and single-read efficiency.
+
+```javascript
+// A blog post with embedded comments
+db.posts.insertOne({
+  _id: ObjectId("507f1f77bcf86cd799439011"),
+  title: "MongoDB Schema Design",
+  content: "Embedding vs referencing...",
+  comments: [
+    { author: "Alice", text: "Great post!", created_at: ISODate("2026-07-06T10:00:00Z") },
+    { author: "Bob", text: "I prefer Postgres.", created_at: ISODate("2026-07-06T11:00:00Z") }
+  ]
+});
+```
+
+#### Referencing (For Unbounded Growth)
+If the array of child documents can grow infinitely (e.g., millions of IoT readings for a single device), embedding will hit the 16MB document size limit. In these 1-to-squillions relationships, you must use referencing.
+
+```javascript
+// Parent document
+db.devices.insertOne({
+  _id: ObjectId("device_123"),
+  name: "Temperature Sensor A"
+});
+
+// Child documents referencing the parent
+db.readings.insertMany([
+  { device_id: ObjectId("device_123"), temp: 22.5, ts: ISODate("2026-07-06T10:00:00Z") },
+  { device_id: ObjectId("device_123"), temp: 22.6, ts: ISODate("2026-07-06T10:01:00Z") }
+]);
+
+// Create an index to make the "join" fast
+db.readings.createIndex({ device_id: 1, ts: -1 });
+```
+
+#### Essential CRUD Queries
+
+**Upserting data:**
+```javascript
+// Update a user's login count, or create them if they don't exist
+db.users.updateOne(
+  { email: "alice@example.com" }, // Filter
+  { 
+    $inc: { login_count: 1 }, 
+    $setOnInsert: { created_at: new Date() } 
+  }, // Update operators
+  { upsert: true } // Options
+);
+```
+
+**Atomic Array Updates:**
+```javascript
+// Push a new comment to a post without reading the post first
+db.posts.updateOne(
+  { _id: ObjectId("507f1f77bcf86cd799439011") },
+  { 
+    $push: { 
+      comments: { author: "Charlie", text: "Thanks!" } 
+    } 
+  }
+);
 ```
 
 ## Redis
