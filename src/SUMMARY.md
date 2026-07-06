@@ -17,4 +17,6 @@
 - [14. Local-First and Cloud Equivalents](ch14-local-cloud-equivalents.md)
 - [15. Google Product Archetypes](ch12-google-products.md)
 - [16. Competing Systems](ch16-competing-systems.md)
-- [17. The Cheat Sheet](ch17-cheatsheet.md)
+- [17. PostgreSQL Schema Design Refresher](ch18-postgres-refresher.md)
+- [18. API Design Refresher](ch19-api-refresher.md)
+- [19. The Cheat Sheet](ch17-cheatsheet.md)

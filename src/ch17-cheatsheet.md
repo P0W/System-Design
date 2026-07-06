@@ -35,7 +35,7 @@ flowchart TD
 | Cross-continent RTT (US to Asia) | ~200-300 ms | |
 | Human perception threshold | ~100 ms | feel of "instant" |
 
-> **Mnemonic:** ns → µs → ms each step is ~1000× slower. Cache → RAM → SSD → HDD → Network.
+> **Mnemonic:** ns → µs → ms each step is ~1000× slower. Cache → RAM → SSD → Network (Same-DC) → HDD → Network (Cross-region).
 
 ### Throughput baselines
 
@@ -217,13 +217,11 @@ flowchart TD
 flowchart TD
   CAP[CAP Theorem] --> CP[CP: Consistency + Partition Tolerance]
   CAP --> AP[AP: Availability + Partition Tolerance]
-  CAP --> CA[CA: Consistency + Availability, no partition tolerance]
   CP --> CPex[ZooKeeper, etcd, HBase, Spanner]
   AP --> APex[Cassandra, DynamoDB, CouchDB]
-  CA --> CAex[Single-node PostgreSQL]
 ```
 
-> **Reminder:** CA systems exist only without network partitions. In a distributed system, partitions happen. You are always choosing between C and A.
+> **Reminder:** "CA" (Consistency + Availability without Partition Tolerance) is a misconception. In a distributed system, network partitions will happen. You are always choosing between C and A when a partition occurs. Single-node relational databases are often called "CA", but they are simply not distributed.
 
 ---
 
