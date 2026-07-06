@@ -93,7 +93,10 @@ CREATE TRIGGER update_orders_updated_at
 
 **Insert with Upsert (ON CONFLICT):**
 ```sql
--- Insert a new user, or update their last_login if they already exist
+-- Prerequisite: email must be unique for ON CONFLICT (email) to work.
+CREATE UNIQUE INDEX idx_users_email_unique ON users(email);
+
+-- Insert a new user, or update their last_login if they already exist.
 INSERT INTO users (id, email, last_login) 
 VALUES ('123e4567-e89b-12d3-a456-426614174000', 'alice@example.com', NOW())
 ON CONFLICT (email) 
@@ -137,7 +140,7 @@ flowchart LR
 3. Debezium publishes the ordered stream of events to a message broker (e.g., Kafka).
 4. Consumers process the events asynchronously.
 
-This guarantees that if data is committed to the database, downstream systems will eventually see it.
+With durable WAL retention, a healthy connector, and a durable broker, this gives downstream systems an eventually consistent path from committed database changes without requiring the application to dual-write.
 
 ## Spanner
 
@@ -159,9 +162,9 @@ This guarantees that if data is committed to the database, downstream systems wi
 Cassandra does not support joins. You must model your tables around your **queries**, not your entities. Data duplication (denormalization) is a feature, not a bug.
 
 #### Partition Keys and Clustering Keys
-The Primary Key in Cassandra has two parts:
-1. **Partition Key:** Determines which physical node holds the data.
-2. **Clustering Key:** Determines how the data is sorted *within* that partition on disk.
+The primary key in Cassandra has one required part and one optional part:
+1. **Partition Key:** Hashes the row to a token range and determines the replica set that stores the partition.
+2. **Clustering Key:** Optional columns that determine how rows are sorted within that partition.
 
 ```cql
 -- Model for: "Get all sensor readings for a specific device, ordered by time"
@@ -173,8 +176,8 @@ CREATE TABLE sensor_data (
     PRIMARY KEY ((device_id), recorded_at)
 ) WITH CLUSTERING ORDER BY (recorded_at DESC);
 ```
-- `(device_id)` is the partition key. All readings for a device live on the same node.
-- `recorded_at` is the clustering key. Readings are stored pre-sorted descending by time.
+- `(device_id)` is the partition key. All readings for a device are colocated in the same logical partition and replicated according to the keyspace's replication strategy.
+- `recorded_at` is the clustering key. Readings are stored in descending time order within that partition.
 
 #### Essential CQL Queries
 
@@ -185,16 +188,18 @@ VALUES (123e4567-e89b-12d3-a456-426614174000, toTimestamp(now()), 22.5, 45.0)
 USING TTL 86400; -- Data automatically expires after 1 day
 ```
 
-**Query data (must use the partition key!):**
+**Query data (anchor reads on the partition key):**
 ```cql
--- This works perfectly and is fast (hits one node, reads contiguous sorted disk blocks)
+-- Fast path: the partition key routes the request to the replicas for one partition,
+-- and LIMIT 10 returns the newest rows because recorded_at is clustered DESC.
 SELECT temperature FROM sensor_data 
 WHERE device_id = 123e4567-e89b-12d3-a456-426614174000 
 LIMIT 10;
 ```
 
 ```cql
--- THIS WILL FAIL in Cassandra. You cannot query without the partition key.
+-- Bad data model for Cassandra: without an index this is rejected,
+-- and forcing it with ALLOW FILTERING would require scanning too much data.
 SELECT * FROM sensor_data WHERE temperature > 25.0; 
 ```
 
