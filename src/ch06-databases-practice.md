@@ -380,6 +380,22 @@ flowchart LR
 - Common use: game leaderboards, search ranking freshness, trending feeds, rate-limit counters with sliding windows.
 - A single ZSET holds millions of members with O(log N) writes and reads — one of the cleanest patterns Redis offers.
 
+### Redis Pub/Sub — ephemeral real-time messaging
+
+- `PUBLISH channel message` pushes a payload to all listening clients.
+- `SUBSCRIBE channel` listens for messages on a specific topic.
+- **Crucial limitation:** Redis Pub/Sub is fire-and-forget — there is no persistence or replayable queue. If a subscriber is disconnected when a message is published, they miss it forever. Furthermore, slow subscribers risk being forcibly disconnected by Redis once their in-memory output buffer fills up.
+
+```mermaid
+flowchart LR
+  Pub[WebSocket Server 1] -->|PUBLISH chat:room123| R[(Redis)]
+  R -->|Pushes| Sub1[WebSocket Server 2]
+  R -->|Pushes| Sub2[WebSocket Server 3]
+```
+
+- Common use: fan-out between load-balanced WebSocket servers, global cache invalidation broadcasts, and live UI updates. (For chat, store message history in a database; use Pub/Sub only to route the live notification to connected users).
+- If you need message durability so that consumers can catch up after being offline, use **Redis Streams** or a dedicated broker like Kafka instead.
+
 | Redis data structure | Best for |
 |---|---|
 | String / Hash | key-value cache, session, config |
