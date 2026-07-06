@@ -1,4 +1,4 @@
-# 19. API Design Refresher
+# 17. API Design Refresher
 
 APIs are the contracts between distributed components. An API is a contract written in HTTP. A good one makes the happy path obvious and the failure modes predictable; a bad one makes every client guess. A clean, standard-compliant API reduces friction, eliminates edge-case bugs, and makes integrations predictable.
 

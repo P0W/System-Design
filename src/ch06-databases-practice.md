@@ -17,6 +17,128 @@ flowchart TD
 - Best default choices for transactional systems.
 - Strong consistency, mature indexing, familiar tooling.
 
+### PostgreSQL Schema Design Refresher
+
+When designing systems, fluency in translating concepts into concrete database schemas is essential. A schema is the skeleton of a system's truth. If the schema is clear, the application is easy to reason about; if it is vague, every feature becomes a small act of data archaeology. PostgreSQL provides a robust set of features to turn business ideas into durable, queryable structures.
+
+#### The Core Data Types
+Use these as your default toolkit:
+- **Primary Keys:** `UUID` or `BIGINT GENERATED ALWAYS AS IDENTITY`.
+- **Text:** `TEXT` or `VARCHAR(N)` (no performance difference in Postgres, only constraint enforcement).
+- **Timestamps:** `TIMESTAMPTZ` (always store UTC).
+- **Currency/Decimals:** `NUMERIC(precision, scale)`. Never use floats for financial data.
+
+#### Creating Tables and Enums
+Enums enforce data integrity at the database layer, preventing invalid states.
+
+```sql
+CREATE TYPE order_status AS ENUM ('pending', 'paid', 'shipped', 'delivered', 'cancelled');
+
+CREATE TABLE orders (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL, -- Assume references users(id)
+    status order_status NOT NULL DEFAULT 'pending',
+    total_amount NUMERIC(10, 2) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+#### JSONB for Semi-Structured Data
+When schemas are highly variable (e.g., product attributes, user preferences, dynamic telemetry), use `JSONB`. It stores JSON efficiently in a binary format and supports robust indexing. Use `JSONB` when the shape is genuinely variable and the value is flexibility, not relational structure. If you need joins, constraints, or predictable analytics, keep the data relational and denormalize only when you have a clear reason.
+
+```sql
+ALTER TABLE orders ADD COLUMN metadata JSONB DEFAULT '{}'::jsonb;
+```
+
+#### Indexes: Beyond the Primary Key
+Indexes speed up reads but slow down writes. Use them deliberately.
+
+1. **B-Tree (Default):** Great for exact matches and range queries.
+```sql
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+```
+
+2. **Partial Indexes:** Index only what matters to save space and write latency. Perfect for queue-like tables or statuses.
+```sql
+-- Only index active orders
+CREATE INDEX idx_orders_active ON orders(status) 
+WHERE status IN ('pending', 'paid', 'shipped');
+```
+
+3. **GIN Indexes:** Essential for querying inside unstructured columns like `JSONB`.
+```sql
+CREATE INDEX idx_orders_metadata ON orders USING GIN (metadata);
+```
+
+#### Triggers for Automated State Management
+A classic use case is automatically updating the `updated_at` column so the application layer doesn't have to remember it.
+
+```sql
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_orders_updated_at
+    BEFORE UPDATE ON orders
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+```
+
+#### Essential CRUD Queries
+
+**Insert with Upsert (ON CONFLICT):**
+```sql
+-- Insert a new user, or update their last_login if they already exist
+INSERT INTO users (id, email, last_login) 
+VALUES ('123e4567-e89b-12d3-a456-426614174000', 'alice@example.com', NOW())
+ON CONFLICT (email) 
+DO UPDATE SET last_login = EXCLUDED.last_login;
+```
+
+**Update with RETURNING:**
+Often you need to read the row you just updated, avoiding a second query.
+```sql
+UPDATE orders 
+SET status = 'shipped' 
+WHERE id = '...' AND status = 'paid'
+RETURNING id, status, updated_at;
+```
+
+**Select with Joins and Aggregation:**
+```sql
+SELECT u.email, COUNT(o.id) as total_orders, SUM(o.total_amount) as lifetime_value
+FROM users u
+JOIN orders o ON u.id = o.user_id
+WHERE o.status != 'cancelled'
+GROUP BY u.email
+HAVING SUM(o.total_amount) > 1000;
+```
+
+#### Change Data Capture (CDC)
+When a record changes (like an order being paid), you often need to update a cache, a search index, or notify a shipping service. Dual-writing from the application to both the database and the broker is highly prone to race conditions and failure.
+
+Instead, use CDC:
+```mermaid
+flowchart LR
+  APP[Application] -->|Writes| DB[(PostgreSQL)]
+  DB -->|WAL Log| WAL[Write-Ahead Log]
+  WAL -->|Tails log| DEB[Debezium]
+  DEB -->|Streams| KAF[Kafka Topic]
+  KAF -->|Consumes| CON[Downstream\nConsumers]
+```
+
+1. PostgreSQL writes all changes to its **Write-Ahead Log (WAL)**.
+2. Tools like **Debezium** read the WAL via logical decoding.
+3. Debezium publishes the ordered stream of events to a message broker (e.g., Kafka).
+4. Consumers process the events asynchronously.
+
+This guarantees that if data is committed to the database, downstream systems will eventually see it.
+
 ## Spanner
 
 - Globally distributed relational database with strong consistency.
@@ -31,6 +153,62 @@ flowchart TD
 
 - Wide-column database designed for write-heavy, distributed workloads.
 - Tunable consistency and high availability, with application responsibility for query design.
+
+### Cassandra Schema Design Refresher
+
+Cassandra does not support joins. You must model your tables around your **queries**, not your entities. Data duplication (denormalization) is a feature, not a bug.
+
+#### Partition Keys and Clustering Keys
+The Primary Key in Cassandra has two parts:
+1. **Partition Key:** Determines which physical node holds the data.
+2. **Clustering Key:** Determines how the data is sorted *within* that partition on disk.
+
+```cql
+-- Model for: "Get all sensor readings for a specific device, ordered by time"
+CREATE TABLE sensor_data (
+    device_id UUID,
+    recorded_at TIMESTAMP,
+    temperature DECIMAL,
+    humidity DECIMAL,
+    PRIMARY KEY ((device_id), recorded_at)
+) WITH CLUSTERING ORDER BY (recorded_at DESC);
+```
+- `(device_id)` is the partition key. All readings for a device live on the same node.
+- `recorded_at` is the clustering key. Readings are stored pre-sorted descending by time.
+
+#### Essential CQL Queries
+
+**Insert data:**
+```cql
+INSERT INTO sensor_data (device_id, recorded_at, temperature, humidity) 
+VALUES (123e4567-e89b-12d3-a456-426614174000, toTimestamp(now()), 22.5, 45.0)
+USING TTL 86400; -- Data automatically expires after 1 day
+```
+
+**Query data (must use the partition key!):**
+```cql
+-- This works perfectly and is fast (hits one node, reads contiguous sorted disk blocks)
+SELECT temperature FROM sensor_data 
+WHERE device_id = 123e4567-e89b-12d3-a456-426614174000 
+LIMIT 10;
+```
+
+```cql
+-- THIS WILL FAIL in Cassandra. You cannot query without the partition key.
+SELECT * FROM sensor_data WHERE temperature > 25.0; 
+```
+
+**Time-Series Pattern (Bucketing):**
+If a single device produces millions of readings, the partition will grow too large (a "wide row"). Solve this by bucketing the partition key by time.
+```cql
+CREATE TABLE sensor_data_bucketed (
+    device_id UUID,
+    month TEXT, -- e.g., '2026-07'
+    recorded_at TIMESTAMP,
+    temperature DECIMAL,
+    PRIMARY KEY ((device_id, month), recorded_at)
+);
+```
 
 ## MongoDB
 

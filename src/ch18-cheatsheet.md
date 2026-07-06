@@ -1,4 +1,4 @@
-# 17. The Cheat Sheet
+# 18. The Cheat Sheet
 
 > **Note:** Print this. Tattoo it. Read it in the Uber to your interview.
 > This is the one chapter where brevity is the entire point.
